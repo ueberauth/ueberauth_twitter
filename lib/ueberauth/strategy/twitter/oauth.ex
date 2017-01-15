@@ -17,10 +17,10 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   def access_token({token, token_secret}, verifier, opts \\ []) do
     opts
-    |> client
+    |> client()
     |> to_url(:access_token)
     |> String.to_char_list
-    |> :oauth.get([oauth_verifier: verifier], consumer(client), token, token_secret)
+    |> :oauth.get([oauth_verifier: verifier], consumer(client()), token, token_secret)
     |> decode_access_response
   end
 
@@ -48,10 +48,10 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   def get(url, access_token), do: get(url, [], access_token)
   def get(url, params, {token, token_secret}) do
-    client
+    client()
     |> to_url(url)
     |> String.to_char_list
-    |> :oauth.get(params, consumer(client), token, token_secret)
+    |> :oauth.get(params, consumer(client()), token, token_secret)
   end
 
   def request_token(params \\ [], opts \\ []) do
