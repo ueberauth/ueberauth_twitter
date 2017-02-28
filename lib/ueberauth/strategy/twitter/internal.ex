@@ -3,7 +3,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
   A layer to handle OAuth signing, etc.
   """
 
-  def get(url, extraparams, {consumer_key, consumer_secret, _} = consumer, token \\ "", token_secret \\ "") do
+  def get(url, extraparams, {consumer_key, consumer_secret, _}, token \\ "", token_secret \\ "") do
     creds = OAuther.credentials(
       consumer_key: consumer_key,
       consumer_secret: consumer_secret,

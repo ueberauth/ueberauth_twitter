@@ -21,7 +21,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     opts
     |> client
     |> to_url(:access_token)
-    |> Internal.get([{"oauth_verifier", verifier}], consumer(client), token, token_secret)
+    |> Internal.get([{"oauth_verifier", verifier}], consumer(client()), token, token_secret)
     |> decode_response
   end
 
@@ -49,9 +49,9 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   def get(url, access_token), do: get(url, [], access_token)
   def get(url, params, {token, token_secret}) do
-    client
+    client()
     |> to_url(url)
-    |> Internal.get(params, consumer(client), token, token_secret)
+    |> Internal.get(params, consumer(client()), token, token_secret)
   end
 
   def request_token(params \\ [], opts \\ []) do
@@ -73,7 +73,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   defp consumer(client), do: {client.consumer_key, client.consumer_secret, :hmac_sha1}
 
-  defp decode_response({:ok, %{status_code: 200, body: body, headers: headers}} = resp) do
+  defp decode_response({:ok, %{status_code: 200, body: body, headers: _}}) do
     params = Internal.params_decode(body)
     token = Internal.token(params)
     token_secret = Internal.token_secret(params)
