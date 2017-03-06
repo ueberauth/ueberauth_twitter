@@ -10,16 +10,21 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
       token: token,
       token_secret: token_secret
     )
-    {header, params} = "get" |> OAuther.sign(url, extraparams, creds) |> OAuther.header
+    {header, params} =
+      "get"
+      |> OAuther.sign(url, extraparams, creds)
+      |> OAuther.header
+
     HTTPoison.get(url, [header], params: params)
   end
 
   def params_decode(resp) do
     resp
-    |> String.split("&")
-    |> Enum.map(fn (item) -> String.split(item, "=") end)
+    |> String.split("&", trim: true)
+    |> Enum.map(&String.split(&1, "="))
     |> Enum.map(&List.to_tuple/1)
-    |> Enum.reduce(%{}, fn({name, val}, acc) -> Map.put_new(acc, name, val) end)
+    |> Enum.into(%{})
+    # |> Enum.reduce(%{}, fn({name, val}, acc) -> Map.put_new(acc, name, val) end)
   end
 
   def token(params) do
@@ -29,5 +34,4 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
   def token_secret(params) do
     params["oauth_token_secret"]
   end
-
 end

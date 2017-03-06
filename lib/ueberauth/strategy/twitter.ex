@@ -117,6 +117,10 @@ defmodule Ueberauth.Strategy.Twitter do
   end
 
   defp option(conn, key) do
-    Access.get(options(conn), key, Access.get(default_options(), key))
+    default = Keyword.get(default_options(), key)
+
+    conn
+    |> options
+    |> Keyword.get(key, default)
   end
 end
