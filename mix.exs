@@ -20,13 +20,13 @@ defmodule UeberauthTwitter.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :httpoison, :oauth, :ueberauth]]
+    [applications: [:logger, :httpoison, :oauther, :ueberauth]]
   end
 
   defp deps do
     [
      {:httpoison, "~> 0.7"},
-     {:oauth, github: "tim/erlang-oauth"},
+     {:oauther, "~> 1.1"},
      {:poison, "~> 1.3 or ~> 2.0"},
      {:ueberauth, "~> 0.2"},
 
