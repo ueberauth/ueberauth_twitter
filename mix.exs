@@ -27,7 +27,7 @@ defmodule UeberauthTwitter.Mixfile do
     [
      {:httpoison, "~> 0.7"},
      {:oauther, "~> 1.1"},
-     {:poison, "~> 1.3 or ~> 2.0"},
+     {:poison, "~> 1.3 or ~> 2.0 or ~> 3.0 or ~> 4.0"},
      {:ueberauth, "~> 0.2"},
 
      # dev/test dependencies
