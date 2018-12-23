@@ -111,7 +111,7 @@ defmodule Ueberauth.Strategy.Twitter do
         |> put_private(:twitter_token, token)
         |> put_private(:twitter_user, body)
       {:ok, %{status_code: _, body: body, headers: _}} ->
-        body = json_library().decode!(body)
+        body = Ueberauth.Config.json_library().decode!(body)
         error = List.first(body["errors"])
         set_errors!(conn, [error("token", error["message"])])
     end
