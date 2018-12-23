@@ -10,6 +10,30 @@ defmodule Ueberauth.Strategy.Twitter do
   alias Ueberauth.Auth.Extra
   alias Ueberauth.Strategy.Twitter
 
+  @json_library Application.get_env(:ueberauth, :json_library, Ueberauth.Config.json_library())
+  unless Code.ensure_loaded?(@json_library) do
+    IO.puts("""
+    The json_library '#{inspect(@json_library)}' does not appear
+    to be available.  A json library is required
+    for Ueberauth to operate. Is it configured as a
+    dependency in mix.exs?
+    In config.exs your expicit or implicit configuration is:
+      config ueberauth,
+        json_library: #{inspect(@json_library)}
+    In mix.exs you will need something like:
+      def deps() do
+        [
+          ...
+          {:#{String.downcase(inspect(@json_library))}, :version}
+        ]
+      end
+    """)
+
+    raise ArgumentError,
+          "Json library #{String.downcase(inspect(@json_library))} does " <>
+            "not appear to be a dependency"
+  end
+
   @doc """
   Handles initial request for Twitter authentication.
   """
@@ -105,13 +129,13 @@ defmodule Ueberauth.Strategy.Twitter do
       {:ok, %{status_code: 401, body: _, headers: _}} ->
         set_errors!(conn, [error("token", "unauthorized")])
       {:ok, %{status_code: status_code, body: body, headers: _}} when status_code in 200..399 ->
-        body = Poison.decode!(body)
+        body = @json_library.decode!(body)
 
         conn
         |> put_private(:twitter_token, token)
         |> put_private(:twitter_user, body)
       {:ok, %{status_code: _, body: body, headers: _}} ->
-        body = Poison.decode!(body)
+        body = @json_library.decode!(body)
         error = List.first(body["errors"])
         set_errors!(conn, [error("token", error["message"])])
     end
