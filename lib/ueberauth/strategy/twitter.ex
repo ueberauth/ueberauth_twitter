@@ -124,8 +124,4 @@ defmodule Ueberauth.Strategy.Twitter do
     |> options
     |> Keyword.get(key, default)
   end
-
-  defp json_library do
-    Ueberauth.Config.json_library()
-  end
 end
