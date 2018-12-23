@@ -126,6 +126,6 @@ defmodule Ueberauth.Strategy.Twitter do
   end
 
   defp json_library do
-    Ueberauth.Config.json_library() || Jason
+    Ueberauth.Config.json_library()
   end
 end
