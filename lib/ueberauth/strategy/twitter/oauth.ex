@@ -80,8 +80,13 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
     {:ok, {token, token_secret}}
   end
-  defp decode_response({:ok, %{status_code: status_code, body: _, headers: _}}) do
-    {:error, "#{status_code}"}
+  defp decode_response({:ok, %{status_code: status_code, body: body, headers: _}}) do
+    message = String.replace(body, ~r/<.*?>/, "")
+    error_code = case Regex.scan(~r/<error code="(.*?)">/, body) do
+      [[_match, error_code]] -> error_code
+      _ -> nil
+    end
+    {:error, "#{message} (ERROR #{error_code}, STATUS #{status_code})"}
   end
   defp decode_response({:error, %{reason: reason}}) do
     {:error, "#{reason}"}
