@@ -20,10 +20,12 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
   end
 
   def decode_body({:ok, response}) do
-    content_type = Enum.find_value(response.headers, fn
-      {"content-type", val} -> val
-      _ -> nil
-    end)
+    content_type =
+      Enum.find_value(response.headers, fn
+        {"content-type", val} -> val
+        _ -> nil
+      end)
+
     case content_type do
       "application/json" <> _ ->
         json_body = Ueberauth.json_library().decode!(response.body)
@@ -34,6 +36,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
         {:ok, response}
     end
   end
+
   def decode_body(other), do: other
 
   def params_decode(resp) do

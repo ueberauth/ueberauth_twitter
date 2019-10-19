@@ -85,19 +85,22 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   defp consumer(client), do: {client.consumer_key, client.consumer_secret, :hmac_sha1}
 
-  defp decode_response({:ok, %{status_code: 200, body: body, headers: _}}) do
+  defp decode_response({:ok, %{status_code: 200, body: body}}) do
     params = Internal.params_decode(body)
     token = Internal.token(params)
     token_secret = Internal.token_secret(params)
 
     {:ok, {token, token_secret}}
   end
-  defp decode_response({:ok, %{status_code: status_code, body: %{"errors" => [error | _]}, headers: _}}) do
+
+  defp decode_response({:ok, %{status_code: status_code, body: %{"errors" => [error | _]}}}) do
     {:error, %ApiError{message: error["message"], code: error["code"]}}
   end
+
   defp decode_response({:error, %{reason: reason}}) do
     {:error, "#{reason}"}
   end
+
   defp decode_response(error) do
     {:error, error}
   end
