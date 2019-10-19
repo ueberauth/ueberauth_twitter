@@ -17,6 +17,18 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
              request_token: "/oauth/request_token",
              site: "https://api.twitter.com"]
 
+  defmodule ApiError do
+    @moduledoc "Raised on OAuth API errors."
+
+    defexception [:message, :code]
+
+    def message(e = %{code: nil}), do: e.message
+
+    def message(e) do
+      "#{e.message} (Code #{e.code})"
+    end
+  end
+
   def access_token({token, token_secret}, verifier, opts \\ []) do
     opts
     |> client()
@@ -80,13 +92,8 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
     {:ok, {token, token_secret}}
   end
-  defp decode_response({:ok, %{status_code: status_code, body: body, headers: _}}) do
-    message = String.replace(body, ~r/<.*?>/, "")
-    error_code = case Regex.scan(~r/<error code="(.*?)">/, body) do
-      [[_match, error_code]] -> error_code
-      _ -> nil
-    end
-    {:error, "#{message} (ERROR #{error_code}, STATUS #{status_code})"}
+  defp decode_response({:ok, %{status_code: status_code, body: %{"errors" => [error | _]}, headers: _}}) do
+    {:error, %ApiError{message: error["message"], code: error["code"]}}
   end
   defp decode_response({:error, %{reason: reason}}) do
     {:error, "#{reason}"}
