@@ -18,7 +18,7 @@ defmodule Ueberauth.Strategy.Twitter do
 
     conn
     |> put_session(:twitter_token, token)
-    |> redirect!(Twitter.OAuth.authorize_url!(token))
+    |> redirect!(Twitter.OAuth.authorize_url!(token, auth_params: conn.query_params))
   end
 
   @doc """

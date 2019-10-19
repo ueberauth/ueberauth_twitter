@@ -45,9 +45,13 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
   end
 
   def authorize_url!({token, _token_secret}, opts \\ []) do
+    {auth_params, opts} = Keyword.pop(opts, :auth_params, %{})
+
+    params = Map.put(auth_params, "oauth_token", token)
+
     opts
     |> client()
-    |> to_url(:authorize_url, %{"oauth_token" => token})
+    |> to_url(:authorize_url, params)
   end
 
   def client(opts \\ []) do
