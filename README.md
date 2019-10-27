@@ -73,6 +73,10 @@ Depending on the configured url you can initiate the request through:
 
     /auth/twitter
 
+Query parameters such as `force_login` and `screen_name` will be forwarded to the [OAuth endpoint](https://developer.twitter.com/en/docs/basics/authentication/api-reference/authenticate). For example, to always ask for a user name and password (even if logged in to Twitter), initiate the request through:
+
+    /auth/twitter?force_login=true
+
 ## Development mode
 
 As noted when registering your application on the Twitter Developer site, you need to explicitly specify the `oauth_callback` url.  While in development, this is an example url you need to enter.
