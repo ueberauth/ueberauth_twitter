@@ -54,8 +54,8 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     config = Application.get_env(:ueberauth, __MODULE__)
 
     @defaults
-    |> Keyword.merge(config)
     |> Keyword.merge(opts)
+    |> Keyword.merge(config)
     |> Enum.into(%{})
   end
 
