@@ -45,19 +45,23 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
   end
 
   def authorize_url!({token, _token_secret}, opts \\ []) do
+    {auth_params, opts} = Keyword.pop(opts, :auth_params, %{})
+    params = Map.put(auth_params, "oauth_token", token)
     opts
     |> client()
-    |> to_url(:authorize_url, %{"oauth_token" => token})
+    |> to_url(:authorize_url, params)
   end
 
   def client(opts \\ []) do
     config = Application.get_env(:ueberauth, __MODULE__)
-
     @defaults
-    |> Keyword.merge(config)
     |> Keyword.merge(opts)
+    |> Keyword.merge(config, &merge_present_values/3)
     |> Enum.into(%{})
   end
+
+  defp merge_present_values(_key, left, nil), do: left
+  defp merge_present_values(_key, _left, right), do: right
 
   def get(url, access_token), do: get(url, [], access_token)
   def get(url, params, {token, token_secret}) do
@@ -93,8 +97,12 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     {:ok, {token, token_secret}}
   end
 
-  defp decode_response({:ok, %{status_code: status_code, body: %{"errors" => [error | _]}}}) do
+  defp decode_response({:ok, %{body: %{"errors" => [error | _]}}}) do
     {:error, %ApiError{message: error["message"], code: error["code"]}}
+  end
+
+  defp decode_response({:ok, %{status_code: status_code, body: body}}) do
+    {:error, %ApiError{message: body, code: status_code}}
   end
 
   defp decode_response({:error, %{reason: reason}}) do
