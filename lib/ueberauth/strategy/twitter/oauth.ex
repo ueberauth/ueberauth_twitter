@@ -12,10 +12,12 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
   alias Ueberauth.Strategy.Twitter.OAuth.Internal
 
-  @defaults [access_token: "/oauth/access_token",
-             authorize_url: "/oauth/authorize",
-             request_token: "/oauth/request_token",
-             site: "https://api.twitter.com"]
+  @defaults [
+    access_token: "/oauth/access_token",
+    authorize_url: "/oauth/authorize",
+    request_token: "/oauth/request_token",
+    site: "https://api.twitter.com"
+  ]
 
   defmodule ApiError do
     @moduledoc "Raised on OAuth API errors."
@@ -56,10 +58,22 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     @defaults
     |> Keyword.merge(config)
     |> Keyword.merge(opts)
-    |> Enum.into(%{})
+    |> Enum.into(%{}, fn
+      {key, {:system, env_var, default}} ->
+        value = System.get_env(env_var, default)
+        {key, value}
+
+      {key, {System, fun, args}} ->
+        value = apply(System, fun, args)
+        {key, value}
+
+      {key, value} ->
+        {key, value}
+    end)
   end
 
   def get(url, access_token), do: get(url, [], access_token)
+
   def get(url, params, {token, token_secret}) do
     client()
     |> to_url(url)
@@ -93,7 +107,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     {:ok, {token, token_secret}}
   end
 
-  defp decode_response({:ok, %{status_code: status_code, body: %{"errors" => [error | _]}}}) do
+  defp decode_response({:ok, %{status_code: _status_code, body: %{"errors" => [error | _]}}}) do
     {:error, %ApiError{message: error["message"], code: error["code"]}}
   end
 
