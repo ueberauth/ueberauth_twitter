@@ -23,11 +23,14 @@ _Note_: Sessions are required for this strategy.
     ```elixir
     config :ueberauth, Ueberauth,
       providers: [
-        twitter: {Ueberauth.Strategy.Twitter, []}
+        twitter: {Ueberauth.Strategy.Twitter, [authorize_url: "/oauth/authenticate"]}
       ]
     ```
 
-1.  Update your provider configuration:
+    The request url can be overridden via the "authorize_url" opt, without the override the url
+    defaults to "/oauth/authorize" 
+
+2.  Update your provider configuration:
 
     ```elixir
     config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
@@ -35,7 +38,7 @@ _Note_: Sessions are required for this strategy.
       consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET")
     ```
 
-1.  Include the Überauth plug in your controller:
+3.  Include the Überauth plug in your controller:
 
     ```elixir
     defmodule MyApp.AuthController do
@@ -45,7 +48,7 @@ _Note_: Sessions are required for this strategy.
     end
     ```
 
-1.  Create the request and callback routes if you haven't already:
+4.  Create the request and callback routes if you haven't already:
 
     ```elixir
     scope "/auth", MyApp do
@@ -56,7 +59,7 @@ _Note_: Sessions are required for this strategy.
     end
     ```
 
-1. Your controller needs to implement callbacks to deal with `Ueberauth.Auth` and `Ueberauth.Failure` responses.
+5. Your controller needs to implement callbacks to deal with `Ueberauth.Auth` and `Ueberauth.Failure` responses.
 
 For an example implementation see the [Überauth Example](https://github.com/ueberauth/ueberauth_example) application.
 
@@ -65,6 +68,12 @@ For an example implementation see the [Überauth Example](https://github.com/ueb
 Depending on the configured url you can initiate the request through:
 
     /auth/twitter
+
+
+Query parameters such as `force_login` and `screen_name` will be forwarded to the [OAuth endpoint](https://developer.twitter.com/en/docs/basics/authentication/api-reference/authenticate). For example, to always ask for a user name and password (even if logged in to Twitter), initiate the request through:
+
+/auth/twitter?force_login=true
+
 
 ## Development mode
 

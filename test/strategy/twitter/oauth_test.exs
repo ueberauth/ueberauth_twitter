@@ -2,6 +2,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuthTest do
   use ExUnit.Case, async: true
 
   alias Ueberauth.Strategy.Twitter.OAuth
+  alias Ueberauth.Strategy.Twitter.OAuth.ApiError
 
   setup do
     Application.put_env :ueberauth, OAuth,
@@ -11,7 +12,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuthTest do
   end
 
   test "access_token!/2: raises an appropriate error on auth failure" do
-    assert_raise RuntimeError, ~r/401/i, fn ->
+    assert_raise ApiError, ~r/401/i, fn ->
       OAuth.access_token! {"badtoken", "badsecret"}, "badverifier"
     end
   end
@@ -23,7 +24,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuthTest do
   end
 
   test "request_token!/2: raises an appropriate error on auth failure" do
-    assert_raise RuntimeError, ~r/401/i, fn ->
+    assert_raise ApiError, ~r/Could not authenticate you/i, fn ->
       OAuth.request_token! [], redirect_uri: "some/uri"
     end
   end

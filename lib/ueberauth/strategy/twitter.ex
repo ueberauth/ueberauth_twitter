@@ -15,10 +15,10 @@ defmodule Ueberauth.Strategy.Twitter do
   """
   def handle_request!(conn) do
     token = Twitter.OAuth.request_token!([], [redirect_uri: callback_url(conn)])
-
+    options = conn.private[:ueberauth_request_options].options
     conn
     |> put_session(:twitter_token, token)
-    |> redirect!(Twitter.OAuth.authorize_url!(token))
+    |> redirect!(Twitter.OAuth.authorize_url!(token, Keyword.merge(options, auth_params: conn.query_params)))
   end
 
   @doc """
