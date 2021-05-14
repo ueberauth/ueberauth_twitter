@@ -54,10 +54,13 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     config = Application.get_env(:ueberauth, __MODULE__)
 
     @defaults
-    |> Keyword.merge(config)
     |> Keyword.merge(opts)
+    |> Keyword.merge(config, &merge_present_values/3)
     |> Enum.into(%{})
   end
+
+  defp merge_present_values(_key, left, nil), do: left
+  defp merge_present_values(_key, _left, right), do: right
 
   def get(url, access_token), do: get(url, [], access_token)
   def get(url, params, {token, token_secret}) do
