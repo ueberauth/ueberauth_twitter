@@ -96,6 +96,10 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
     {:ok, {token, token_secret}}
   end
 
+  defp decode_response({:ok, %{status_code: 401, body: body}}) do
+    {:error, "401: #{inspect(body)}"}
+  end
+
   defp decode_response({:ok, %{body: %{"errors" => [error | _]}}}) do
     {:error, %ApiError{message: error["message"], code: error["code"]}}
   end
