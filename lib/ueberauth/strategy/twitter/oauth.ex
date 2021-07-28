@@ -24,7 +24,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth do
 
     defexception [:message, :code]
 
-    def message(e = %{code: nil}), do: e.message
+    def message(%{code: nil} = e), do: e.message
 
     def message(e) do
       "#{e.message} (Code #{e.code})"
