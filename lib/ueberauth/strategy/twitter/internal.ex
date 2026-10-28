@@ -26,7 +26,7 @@ defmodule Ueberauth.Strategy.Twitter.OAuth.Internal do
   def decode_body({:ok, response}) do
     content_type =
       Enum.find_value(response.headers, fn
-        {"content-type", val} -> val
+        {"Content-Type", val} -> val
         _ -> nil
       end)
 
